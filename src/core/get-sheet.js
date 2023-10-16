@@ -1,4 +1,4 @@
-let GOOBER_ID = '_goober_mod';
+let GOOBER_ID = '_itches';
 let ssr = {
     data: ''
 };

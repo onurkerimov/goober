@@ -1,43 +1,68 @@
-const { createMacro, MacroError } = require('babel-plugin-macros');
-const { addNamed } = require('@babel/helper-module-imports');
+const {readFileSync, writeFileSync} = require('fs');
+const {basename, relative} = require('path');
+const {createMacro} = require('babel-plugin-macros');
+const {addSideEffect, addNamed} = require('@babel/helper-module-imports');
+const CallExpression = require('./visitors/CallExpression');
+const StyleSheet = require('./StyleSheet');
 
-module.exports = createMacro(gooberMacro);
+const checkType = (path, type) => {
+  if (path.parentPath.type !== type)
+    throw new Error(
+      `itches/macro/${path.node.name} can only be used as ${type}. You tried ${path.parentPath.type}.`
+    );
+};
 
-function gooberMacro({ references, babel, state }) {
-    const program = state.file.path;
+module.exports = createMacro(({ references, state, babel }) => {
+  const {types} = babel;
+  const program = state.file.path;
+  const cssRefs = references.css || [];
+  const stylesRefs = references.styles || [];
 
-    if (references.default) {
-        throw new MacroError('goober.macro does not support default import');
-    }
+  const styleSheet = new StyleSheet();
 
-    // Inject import {...} from 'goober'
-    Object.keys(references).forEach((refName) => {
-        const id = addNamed(program, refName, 'goober');
-        references[refName].forEach((referencePath) => {
-            referencePath.node.name = id.name;
-        });
+  Object.assign(state, {styleSheet});
+
+  cssRefs.forEach(ref => {
+    checkType(ref, 'CallExpression');
+    CallExpression(ref.parentPath, state, types);
+  });
+
+  Object.keys(references).forEach((refName) => {
+    const id = addNamed(program, refName, 'itches/runtime');
+    references[refName].forEach((referencePath) => {
+        referencePath.node.name = id.name;
     });
+  });
 
-    const t = babel.types;
+  // remove variable declarations of css``;
+  // cssRefs.forEach(ref => {
+  //   ref.parentPath.parentPath.remove();
+  // });
 
-    const styledReferences = references.styled || [];
+  const filename = state.file.opts.filename;
 
-    styledReferences.forEach((referencePath) => {
-        const type = referencePath.parentPath.type;
+  // choose a file to save the styles
+  const outputFilename = relative(process.cwd(), filename.replace(/\.[^.]+$/, '.zero.css'));
 
-        if (type === 'MemberExpression') {
-            const node = referencePath.parentPath.node;
-            const functionName = node.object.name;
-            let elementName = node.property.name;
+  // include this file as an import to the referenced module, so that css-loader can pick it up at bundle-time
+  addSideEffect(stylesRefs[0], './' + basename(outputFilename));
 
-            // Support custom elements
-            if (/[A-Z]/.test(elementName)) {
-                elementName = elementName.replace(/[A-Z]/g, '-$&').toLowerCase();
-            }
+  // combine all the used styles
+  const cssText = styleSheet.toString();
 
-            referencePath.parentPath.replaceWith(
-                t.callExpression(t.identifier(functionName), [t.stringLiteral(elementName)])
-            );
-        }
-    });
-}
+  // Read the file first to compare the content
+  // Write the new content only if it's changed
+  // This will prevent unnecessary reloads
+  let currentCssText;
+
+  try {
+    currentCssText = readFileSync(outputFilename, 'utf-8');
+  } catch (e) {
+    // Ignore error
+  }
+
+  // if the files hasn't changed, nothing more to do
+  if (currentCssText === cssText) return;
+
+  writeFileSync(outputFilename, cssText);
+});

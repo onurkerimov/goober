@@ -4,11 +4,10 @@ describe('goober', () => {
     it('exports', () => {
         expect(Object.keys(goober).sort()).toEqual([
             'css',
+            'cx',
             'extractCss',
-            'glob',
-            'keyframes',
-            'setup',
-            'styled'
+            'injectGlobal',
+            'keyframes'
         ]);
     });
 });

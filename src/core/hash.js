@@ -38,7 +38,7 @@ export let hash = (compiled, sheet, global, append, keyframes) => {
 
     // Retrieve the className from cache or hash it in place
     let className =
-        cache[stringifiedCompiled] || (cache[stringifiedCompiled] = 'go-' + toHash(stringifiedCompiled));
+        cache[stringifiedCompiled] || (cache[stringifiedCompiled] = 'i-' + toHash(stringifiedCompiled));
 
     // If there's no entry for the current className
     if (!cache[className]) {
@@ -58,7 +58,6 @@ export let hash = (compiled, sheet, global, append, keyframes) => {
     // This is required for using `createGlobalStyles` with themes
     let cssToReplace = global && cache.g ? cache.g : null;
     if (global) cache.g = cache[className];
-
     // add or update
     update(cache[className], sheet, append, cssToReplace);
 

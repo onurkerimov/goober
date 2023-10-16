@@ -1,4 +1,4 @@
-import { css, glob, keyframes } from '../css';
+import { css, injectGlobal, keyframes } from '../css';
 import { hash } from '../core/hash';
 import { compile } from '../core/compile';
 import { getSheet } from '../core/get-sheet';
@@ -91,13 +91,13 @@ describe('css', () => {
     });
 });
 
-describe('glob', () => {
+describe('injectGlobal', () => {
     it('type', () => {
-        expect(typeof glob).toEqual('function');
+        expect(typeof injectGlobal).toEqual('function');
     });
 
     it('args: g', () => {
-        glob`a:b`;
+        injectGlobal`a:b`;
         expect(hash).toBeCalledWith('compile()', 'getSheet()', 1, undefined, undefined);
     });
 });

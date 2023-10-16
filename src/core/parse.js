@@ -55,6 +55,15 @@ export let parse = (obj, selector) => {
                 unitless[key] !== 1 &&
                 !isCustomProperty(key)
               ) {
+                if(key === 'font-weight') {
+                    console.log([
+                        typeof val === 'number',
+                        val !== 0,
+                        unitless[key] !== 1,
+                        !isCustomProperty(key)
+                    ])
+                }
+
                 val = val + 'px'
               }
 

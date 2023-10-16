@@ -2,6 +2,8 @@ import { hash } from './core/hash';
 import { compile } from './core/compile';
 import { getSheet } from './core/get-sheet';
 
+const map = {}
+
 /**
  * css entry
  * @param {String|Object|Function} val
@@ -9,7 +11,6 @@ import { getSheet } from './core/get-sheet';
 function css(val) {
     let ctx = this || {};
     let _val = val.call ? val(ctx.p) : val;
-
     return hash(
         _val.unshift
             ? _val.raw
@@ -29,7 +30,7 @@ function css(val) {
  * CSS Global function to declare global styles
  * @type {Function}
  */
-let glob = css.bind({ g: 1 });
+let injectGlobal = css.bind({ g: 1 });
 
 /**
  * `keyframes` function for defining animations
@@ -37,4 +38,17 @@ let glob = css.bind({ g: 1 });
  */
 let keyframes = css.bind({ k: 1 });
 
-export { css, glob, keyframes };
+/**
+ * `dynamic` function for getting CSSProperties for dynamic clases
+ * @type {Function}
+ */
+let dynamic = (c, props) => {
+    const v = {}
+    Object.keys(map[c]).forEach((key) => {
+      const item = map[c][key]
+      v[key] = typeof item === 'function' ? item(props) : item
+    })
+    return v
+}
+
+export { css, injectGlobal, keyframes, dynamic };

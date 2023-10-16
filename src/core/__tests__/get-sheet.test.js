@@ -12,7 +12,7 @@ describe('getSheet', () => {
 
         expect(sheet.nodeType).toEqual(3);
         expect(sheet.parentElement.nodeType).toEqual(1);
-        expect(sheet.parentElement.getAttribute('id')).toEqual('_goober');
+        expect(sheet.parentElement.getAttribute('id')).toEqual('__itch');
     });
 
     it('reuse sheet', () => {
