@@ -26,6 +26,7 @@
     "./macro": "./macro/index.js"
   },
   "scripts": {
+    "dev": "vite dev",
     "test": "npm run test-unit -- --ci --coverage && npm run build && npm run test-perf",
     "test-perf": "NODE_ENV=production node benchmarks/perf.cjs",
     "test-perf-hash": "NODE_ENV=production node benchmarks/perf-hash.cjs",
@@ -77,16 +78,18 @@
     "rimraf": "3.0.2",
     "styled-components": "^5.2.1",
     "typescript": "^3.6.3",
-    "wmr": "^3.7.2"
+    "wmr": "^3.7.2",
+    "vite": "^4.4.11",
+    "vite-plugin-babel-macros": "^1.0.6",
+    "vite-tsconfig-paths": "^4.2.1",
+    "@babel/helper-module-imports": "^7.8.3",
+    "babel-plugin-macros": "^2.8.0"
   },
   "dependencies": {
     "@emotion/hash": "^0.9.0",
     "@emotion/unitless": "^0.8.0",
     "csstype": "^3.0.10",
-    "style-vendorizer": "^2.0.0",
-    "vite": "^4.4.11",
-    "vite-plugin-babel-macros": "^1.0.6",
-    "vite-tsconfig-paths": "^4.2.1"
+    "style-vendorizer": "^2.0.0"
   },
   "filesize": {
     "./dist/itches.modern.js": {

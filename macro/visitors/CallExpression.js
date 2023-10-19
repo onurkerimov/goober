@@ -24,29 +24,23 @@ const parse = (item, t, p, key) => {
 const shorten = () => ``
 
 module.exports = function CallExpression(path, state, t) {
-  const {filename} = state
+  const { filename } = state
   if (
     t.isIdentifier(path.node.callee, { name: "css" }) &&
     path.node.arguments.length === 1 &&
     t.isObjectExpression(path.node.arguments[0])
   ) {
-    const objectExpression = path.node.arguments[0];
     const acc = [];
-    const obj = parse(objectExpression, t, acc);
     
     const maybeIdentifier = path.parent.key || path.parent.id;
     const className = autoName(`${filename ? shorten(filename) + "-" : ""}${maybeIdentifier ? maybeIdentifier.name : ""}`);
+    const obj = parse(path.node.arguments[0], t, acc);
     
-    state.styleSheet.addRule({
-      className,
-      selector,
-      cssText: obj.toString,
-      // media,
-    });
+    state.styleSheet.cssText += stringify(obj)
     
-    const templateLiteral = acc.length && t.objectExpression(acc.map((item) => t.objectProperty(t.stringLiteral(item.name), item.item)))
+    const objectExpression = acc.length && t.objectExpression(acc.map((item) => t.objectProperty(t.stringLiteral(item.name), item.item)))
     const stringLiteral = t.stringLiteral(className)
-    path.replaceWith(templateLiteral ?  t.callExpression(t.identifier("css"), [stringLiteral, templateLiteral]) : stringLiteral);
+    path.replaceWith(objectExpression ?  t.callExpression(t.identifier("css"), [stringLiteral, objectExpression]) : stringLiteral);
 
   }
 }
