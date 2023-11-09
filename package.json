@@ -20,7 +20,7 @@
   "exports": {
     ".": {
       "require": "./dist/itches.cjs",
-      "import": "./dist/itches.modern.js",
+      "import": "./dist/itches.esm.js",
       "umd": "./dist/itches.umd.js"
     },
     "./macro": "./macro/index.js"
@@ -89,7 +89,7 @@
     "style-vendorizer": "^2.0.0"
   },
   "filesize": {
-    "./dist/itches.modern.js": {
+    "./dist/itches.esm.js": {
       "gzip": "1400B"
     },
     "./dist/itches.cjs": {

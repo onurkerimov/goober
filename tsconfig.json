@@ -18,7 +18,8 @@
     "baseUrl": "./",
     "paths": {
       "itches": ["."],
-      // "itches/macro": ["macro"],
+      "itches/macro": ["macro"],
+      "itches/runtime": ["runtime"],
     }
   }
 }

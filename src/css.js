@@ -2,8 +2,6 @@ import { hash } from './core/hash';
 import { compile } from './core/compile';
 import { getSheet } from './core/get-sheet';
 
-const map = {}
-
 /**
  * css entry
  * @param {String|Object|Function} val
@@ -37,6 +35,8 @@ let injectGlobal = css.bind({ g: 1 });
  * @type {Function}
  */
 let keyframes = css.bind({ k: 1 });
+
+const map = {}
 
 /**
  * `dynamic` function for getting CSSProperties for dynamic clases

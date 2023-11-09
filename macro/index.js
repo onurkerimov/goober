@@ -38,26 +38,26 @@ module.exports = createMacro(({ references, state, babel }) => {
   const { cssText } = styleSheet
 
   // choose a file to save the styles
-  const outputFilename = path.join('node_modules/.itches', relative(process.cwd(), filename.replace(/\.[^.]+$/, '.module.css')));
+  const outputFilename = path.join('node_modules/.itches', relative(process.cwd(), filename.replace(/\.[^.]+$/, '.css')));
 
   console.log({ outputFilename, cssText })
-  // // include this file as an import to the referenced module, so that css-loader can pick it up at bundle-time
-  // addSideEffect(cssRefs[0], './' + basename(outputFilename));
+  // include this file as an import to the referenced module, so that css-loader can pick it up at bundle-time
+  addSideEffect(cssRefs[0], outputFilename);
 
-  // // // Read the file first to compare the content
-  // // // Write the new content only if it's changed
-  // // // This will prevent unnecessary reloads
-  // let currentCssText;
+  // // Read the file first to compare the content
+  // // Write the new content only if it's changed
+  // // This will prevent unnecessary reloads
+  let currentCssText;
 
-  // try {
-  //   currentCssText = readFileSync(outputFilename, 'utf-8');
-  // } catch (e) {
-  //   // Ignore error
-  // }
+  try {
+    currentCssText = readFileSync(outputFilename, 'utf-8');
+  } catch (e) {
+    // Ignore error
+  }
 
-  // mkdirSync(dirname(outputFilename), { recursive: true });
+  mkdirSync(dirname(outputFilename), { recursive: true });
 
-  // // if the files hasn't changed, nothing more to do
-  // if (currentCssText === cssText) return;
-  // writeFileSync(outputFilename, '');
+  // if the files hasn't changed, nothing more to do
+  if (currentCssText === cssText) return;
+  writeFileSync(outputFilename, cssText);
 });

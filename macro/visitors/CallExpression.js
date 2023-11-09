@@ -1,5 +1,4 @@
-const { astish } = require('../../src/core/astish')
-const { parse } = require('../../src/core/parse')
+const { parse } = require('../../dist/itches.cjs')
 
 const autoName = (key) => `i-${key}-${++id}`;
 const variName = (key) => `--i-${key}-${++variId}`;
@@ -24,7 +23,11 @@ const parseAst = (item, t, p, key) => {
   return obj;
 };
 
-const shorten = () => ``
+const shorten = (id) => {
+  const name = /(\w*)\..*$/.exec(id)[1]
+  if(name === 'index') return ''
+  return name
+}
 
 module.exports = function CallExpression(path, state, t) {
   const { filename } = state
@@ -38,12 +41,11 @@ module.exports = function CallExpression(path, state, t) {
     const maybeIdentifier = path.parent.key || path.parent.id;
     const className = autoName(`${filename ? shorten(filename) + "-" : ""}${maybeIdentifier ? maybeIdentifier.name : ""}`);
     const obj = parseAst(path.node.arguments[0], t, acc);
-    
-    state.styleSheet.cssText += parse(astish(obj), '.' + className)
+    state.styleSheet.cssText += parse(obj, '.' + className)
     
     const objectExpression = acc.length && t.objectExpression(acc.map((item) => t.objectProperty(t.stringLiteral(item.name), item.item)))
     const stringLiteral = t.stringLiteral(className)
-    path.replaceWith(objectExpression ?  t.callExpression(t.identifier("css"), [stringLiteral, objectExpression]) : stringLiteral);
+    path.replaceWith(objectExpression ?  t.callExpression(t.identifier("_css"), [stringLiteral, objectExpression]) : stringLiteral);
 
   }
 }
